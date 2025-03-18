@@ -1,0 +1,94 @@
+﻿@model BuyTilez.Models.Product
+@using BuyTilez.Utilities
+
+@{
+    var title = "Are you sure you want to delete this product?";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+}
+
+<form method="post" asp-action="Delete" enctype="multipart/form-data">
+    <input asp-for="Id" hidden />
+
+    <div class="border p-3">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="row">
+            <h2 class="text-danger">@title</h2>
+        </div>
+        <div class="row">
+            <div class="col-8">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label asp-for="ProductName" class="form-label">Product Name</label>
+                            <input asp-for="ProductName" disabled class="form-control" />
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label asp-for="Price" class="form-label">Price</label>
+                            <input asp-for="Price" disabled class="form-control" />
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label asp-for="ShortDescription" class="form-label">Short Description</label>
+                            <input asp-for="ShortDescription" disabled class="form-control" />
+                        </div>
+                    </div>
+
+                    <div class="row" hidden>
+                        <div class="col-md-6">
+                            <label asp-for="ProductDescription" class="form-label">Product Description</label>
+                            <textarea asp-for="ProductDescription" class="form-control summernote"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="row" hidden>
+                        <div class="col-md-6">
+                            <label asp-for="ImageUrl" class="form-label">Image</label>
+                            <input asp-for="ImageUrl" class="form-control" />
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label asp-for="Category.Id" class="form-label">Category</label>
+                            <input asp-for="CategoryId" hidden class="form-control" />
+                            <input asp-for="Category.CategoryName" disabled class="form-control" />
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label asp-for="ApplicationType.Id" class="form-label">Application Type</label>
+                            <input asp-for="ApplicationTypeId" hidden class="form-control" />
+                            <input asp-for="ApplicationType.Name" disabled class="form-control" />
+                        </div>
+                    </div>
+                    <br />
+
+                    <div class="d-grid gap-2 d-md-block">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                        <a asp-controller="Product" asp-action="Index" class="btn btn-success">Back</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-4">
+                @if (Model.Id != 0)
+                {
+                    <img src="@Constants.ImagePath@Model.ImageUrl" width="100%" style="border-radius:5px; border:1px solid #bbb" />
+                }
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    @{
+        <partial name="_ValidationScriptsPartial" />
+    }
+}

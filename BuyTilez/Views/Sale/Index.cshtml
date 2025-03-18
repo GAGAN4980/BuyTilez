@@ -1,0 +1,66 @@
+﻿@model BuyTilez.Models.ViewModels.SaleViewModel
+@{
+    ViewData["Title"] = "Sales Management";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Sales Management Search Form -->
+<form method="get">
+    <div class="container p-4 my-3">
+        <h2 class="text-info">Sales Management</h2>
+        <div class="border bg-white p-3" style="border-radius: 15px;">
+            <div class="row">
+                <div class="col-12">
+                    <div class="row pt-2">
+                        <!-- Search by Name -->
+                        <div class="col-4">
+                            @Html.Editor("searchName", new { htmlAttributes = new { @class = "form-control", @placeholder = "Enter Name..." } })
+                        </div>
+                        <!-- Search by Email -->
+                        <div class="col-4">
+                            @Html.Editor("searchEmail", new { htmlAttributes = new { @class = "form-control", @placeholder = "Enter Email..." } })
+                        </div>
+                        <!-- Search by Phone -->
+                        <div class="col-4">
+                            @Html.Editor("searchPhone", new { htmlAttributes = new { @class = "form-control", @placeholder = "Enter Phone..." } })
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row pt-1">
+                <!-- Filter by Status -->
+                <div class="col-4">
+                    @Html.DropDownListFor(u => u.Status, Model.StatusList, "-- Select Status --", new { @class = "form-select" })
+                </div>
+                <div class="offset-4 col-4">
+                    <button type="submit" class="h-100 btn btn-info form-control">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<!-- Sales Data Grid -->
+<div class="bg-white p-3">
+    <ejs-grid id="Grid" dataSource="@Model.SaleList" allowFiltering="true" allowSorting="true" allowPaging="true">
+        <e-grid-filtersettings type="Menu"></e-grid-filtersettings>
+        <e-grid-pagesettings pageSize="5"></e-grid-pagesettings>
+        <e-grid-columns>
+            <e-grid-column field="Id" headerText="ID" isPrimaryKey="true" textAlign="Right" width="100"></e-grid-column>
+            <e-grid-column field="FullName" headerText="Full Name" textAlign="Right"></e-grid-column>
+            <e-grid-column field="Email" headerText="Email" textAlign="Right"></e-grid-column>
+            <e-grid-column field="Phone" headerText="Phone" textAlign="Right"></e-grid-column>
+            <e-grid-column field="SaleStatus" headerText="Status" textAlign="Right"></e-grid-column>
+            <e-grid-column field="SaleDate" headerText="Date" customFormat="@(new { type="date", format="MM/dd/yyyy"})" textAlign="Right"></e-grid-column>
+
+            <!-- View Sale Details Button -->
+            <e-grid-column field="Id" headerText="" width="70"
+                           template="<a rel='nofollow' href='Sale/Detail/${Id}' class='btn btn-primary'>
+                                       <i class='fas fa-list'></i>
+                                     </a>">
+            </e-grid-column>
+        </e-grid-columns>
+    </ejs-grid>
+</div>

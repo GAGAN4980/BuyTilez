@@ -1,0 +1,63 @@
+﻿/* 
+ * Bundling & Minification Guide: 
+ * https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification 
+ */
+
+/* Navbar Brand - Ensures long text wraps properly */
+a.navbar-brand {
+    white-space: normal;
+    text-align: center;
+    word-break: break-word; /* Updated from 'break-all' to prevent breaking words in the middle */
+}
+
+/* Default Link Styling */
+a {
+    color: #0077cc;
+    text-decoration: none; /* Optional: Remove underline for better UI */
+}
+
+/* Primary Button Styling */
+.btn-primary {
+    color: #fff;
+    background-color: #1b6ec2;
+    border-color: #1861ac;
+}
+
+/* Active Navigation Pills */
+.nav-pills .nav-link.active,
+.nav-pills .show > .nav-link {
+    color: #fff;
+    background-color: #1b6ec2;
+    border-color: #1861ac;
+}
+
+/* Border Styling */
+.border-top {
+    border-top: 1px solid #e5e5e5;
+}
+
+.border-bottom {
+    border-bottom: 1px solid #e5e5e5;
+}
+
+/* Box Shadow - Adds subtle shadow effect */
+.box-shadow {
+    box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+}
+
+/* Cookie Policy Button */
+button.accept-policy {
+    font-size: 1rem;
+    line-height: inherit;
+}
+
+/* Footer Styling */
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    white-space: nowrap;
+    line-height: 60px;
+    background-color: #f8f9fa; /* Optional: Add a background color for visibility */
+    text-align: center; /* Optional: Center align footer content */
+}

@@ -1,0 +1,108 @@
+﻿@using BuyTilez.Utilities
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - BuyTilez</title>
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/BuyTilez.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/fontawesome/css/all.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" href="https://cdn.syncfusion.com/ej2/material.css" />
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote.min.css" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-dark bg-dark border-bottom box-shadow mb-3">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                    <img src="~/images/tile.png" width="40%" />
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between flex-row-reverse">
+
+                    <partial name="_LoginPartial" />
+
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+
+                        @if (User.IsInRole(Constants.AdminRole))
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                    Manage Content
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" asp-controller="Category" asp-action="Index">Categories</a></li>
+                                    <li><a class="dropdown-item" asp-controller="ApplicationType" asp-action="Index">Application Types</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Product" asp-action="Index">Products</a></li>
+                                    <li><a class="dropdown-item" asp-area="Identity" asp-page="/Account/Register">Create New User</a></li>
+                                </ul>
+                            </li>
+
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                    Manage Orders
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" asp-controller="Order" asp-action="Index">Orders</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Sale" asp-action="Index">Sales</a></li>
+                                </ul>
+                            </li>
+                        }
+
+                        <!-- Shopping Cart -->
+                        <li>
+                            @{
+                                var cartItems = HttpContextAccessor.HttpContext.Session.Get<List<ShoppingCart>>(Constants.ShoppingCartSession);
+                                var itemCount = cartItems?.Count() ?? 0;
+                            }
+                            <a asp-controller="Cart" asp-action="Index" class="nav-link">
+                                <i class="fas fa-shopping-cart"></i> &nbsp; (@itemCount)
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <main role="main" class="pb-3">
+            <partial name="_Notifications" />
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer bg-dark">
+        <div class="container text-white">
+            &copy; 2024 - BuyTilez
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.syncfusion.com/ej2/dist/ej2.min.js"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+    <ejs-scripts></ejs-scripts>
+</body>
+</html>

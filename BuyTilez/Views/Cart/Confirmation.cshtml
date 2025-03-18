@@ -1,0 +1,15 @@
+﻿@model BuyTilez.Models.Sale
+
+<div class="text-center">
+    @if (Model != null)
+    {
+        <h1 class="text-info">Sale Created</h1>
+        <p>Sale @Model.Id has been successfully created.</p>
+    }
+    else
+    {
+        <h1 class="text-info">Confirmation</h1>
+        <p>We have received your inquiry. A member of our team will contact you soon.</p>
+    }
+    <img src="/images/patio.jpg" width="80%" />
+</div>
