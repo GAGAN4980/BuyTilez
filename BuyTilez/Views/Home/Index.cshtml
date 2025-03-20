@@ -26,6 +26,13 @@
         $(document).ready(function(){
             $(".filter-button").click(function(){
                 var value = $(this).attr('data-filter');
+
+                // Change button styles: Remove 'btn-dark' from all, add 'btn-outline-secondary'
+                $(".filter-button").removeClass("btn-dark").addClass("btn-outline-secondary");
+
+                // Add 'btn-dark' to the clicked button and remove 'btn-outline-secondary'
+                $(this).removeClass("btn-outline-secondary").addClass("btn-dark");
+
                 if(value == "all") {
                     $('.filter').show('1000');
                 }

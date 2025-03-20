@@ -2,26 +2,48 @@
 @using BuyTilez.Utilities
 
 <div class="col-lg-4 col-md-6 pb-4 filter @Model.Category.CategoryName.Replace(' ', '_')">
-    <!-- Card -->
-    <div class="card bg-white rounded shadow-sm" style="border:1px solid #222">
-        <div class="card-body px-3 pt-3 pb-1 row">
-            <div class="col-7"><label class="float-left">@Model.ProductName</label></div>
-            <div class="col-5"><label class="float-right"><span class="text-info h5">@Model.Price</span> / m²</label></div>
+    <!-- Product Card -->
+    <div class="card border-0 shadow-lg rounded-lg overflow-hidden">
+        <!-- Product Image -->
+        <div class="position-relative">
+            <img class="card-img-top img-fluid d-block mx-auto" src="@Model.ImageUrl"
+                 alt="Product Image" style="object-fit:cover; height:220px; width:100%; border-top-left-radius:10px; border-top-right-radius:10px;">
         </div>
-        <img class="card-img-top img-fluid d-block mx-auto mb-3" src="@Constants.ImagePath@Model.ImageUrl" alt="Card Image">
-        <div class="card-body p-1 px-3 row">
-            <div class="col-6">
-                <span class="badge p-2 border w-100 text-dark" style="background-color:lavenderblush">@Model.Category.CategoryName</span>
+
+        <!-- Card Body -->
+        <div class="card-body text-center p-3">
+            <!-- Product Name & Price -->
+            <h5 class="font-weight-bold text-dark">@Model.ProductName</h5>
+            <p class="text-primary h5 font-weight-bold">@Model.Price<span class="text-muted h6"> / m²</span></p>
+
+            <!-- Category & Application -->
+            <div class="d-flex justify-content-center mb-2">
+                <span class="badge badge-light border px-3 py-2 rounded-pill text-dark me-2">@Model.Category.CategoryName</span>
+                <span class="badge badge-light border px-3 py-2 rounded-pill text-dark">@Model.ApplicationType.Name</span>
             </div>
-            <div class="col-6 border-0">
-                <span class="badge p-2 border w-100 text-dark" style="background-color:aliceblue">@Model.ApplicationType.Name</span>
-            </div>
-            <div class="col-12 pt-2" style="font-size:13px; text-align:justify">
-                <p>@Model.ShortDescription</p>
-            </div>
-            <div class="col-12 p-1">
-                <a asp-action="Detail" asp-route-Id="@Model.Id" class="btn btn-dark form-control btn-sm p-2" style="height:40px">View Details</a>
-            </div>
+
+            <!-- Short Description -->
+            <p class="text-muted small px-2" style="height: 50px; overflow:hidden;">@Model.ShortDescription</p>
+
+            <!-- View Details Button -->
+            <a asp-action="Detail" asp-route-Id="@Model.Id" class="btn btn-gradient btn-block mt-2">View Details</a>
         </div>
     </div>
 </div>
+
+<!-- CSS for Modern Design -->
+<style>
+    .btn-gradient {
+        background: linear-gradient(135deg, #222, #444);
+        color: #fff;
+        font-weight: 600;
+        border-radius: 8px;
+        padding: 10px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-gradient:hover {
+        background: linear-gradient(135deg, #444, #666);
+        color: #fff;
+    }
+</style>

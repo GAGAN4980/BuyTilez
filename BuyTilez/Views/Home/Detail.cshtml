@@ -1,74 +1,90 @@
 ﻿@model BuyTilez.Models.ViewModels.DetailViewModel
 @using BuyTilez.Utilities
 
-<div class="">
+<div class="container py-4">
     <form method="post">
-        <input asp-for="@Model.Product.Id" hidden />
-        <div class="container backgroundWhite pt-4">
-            <div class="card" style="border:1px solid #000000;">
-                <div class="card-header bg-dark text-light ml-0 row container" style="border-radius: 0px;">
-                    <div class="col-12 col-md-6">
-                        <h1 class="text-white">@Model.Product.ProductName</h1>
-                    </div>
-                    <div class="col-12 col-md-6 text-md-end">
-                        <h1 class="text-warning"> @((Model.Product.Price).ToString("c"))</h1>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="container rounded p-2">
-                        <div class="row">
-                            <div class="col-12 col-lg-4 p-1 text-center">
-                                <img src="@Constants.ImagePath@Model.Product.ImageUrl" width="100%" class="rounded" />
-                            </div>
-                            <div class="col-12 col-lg-8">
-                                <div class="row pl-3">
-                                    <div class="col-12">
-                                        <span class="badge p-3 border text-dark" style="background-color:lavenderblush">@Model.Product.Category.CategoryName</span>
-                                        <span class="badge p-3 border text-dark" style="background-color:azure">@Model.Product.ApplicationType.Name</span>
-                                        <h3 class="text-success"></h3>
-                                        <p class="text-secondary">@Html.Raw(Model.Product.ProductDescription)</p>
-                                    </div>
+        <input asp-for="@Model.Product.Id" type="hidden" />
 
-                                    @if (User.IsInRole(Constants.AdminRole))
-                                    {
-                                        <div class="col-12">
-                                            Square Meters:
-                                        </div>
-                                        <div class="col-12">
-                                            @if (Model.ExistsInCart)
-                                            {
-                                                <input asp-for="@Model.Product.TempSquareMeters" disabled class="form-control" />
-                                            }
-                                            else
-                                            {
-                                                <input asp-for="@Model.Product.TempSquareMeters" class="form-control" />
-                                            }
-                                            <span asp-validation-for="@Model.Product.TempSquareMeters" class="text-danger"></span>
-                                        </div>
-                                    }
-                                </div>
-                            </div>
+        <!-- Product Card -->
+        <div class="card shadow-lg border-0 rounded-lg">
+            <!-- Header with Product Name & Price -->
+            <div class="card-header bg-gradient-dark text-light d-flex justify-content-between align-items-center">
+                <h2 class="text-white m-0">@Model.Product.ProductName</h2>
+                <h2 class="text-warning m-0">@((Model.Product.Price).ToString("c"))</h2>
+            </div>
+
+            <!-- Card Body -->
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <!-- Product Image -->
+                    <div class="col-lg-5 text-center">
+                        <img src="@Model.Product.ImageUrl" class="img-fluid rounded shadow-sm"
+                             style="object-fit: cover; width:100%; height: auto; max-height: 350px;"
+                             alt="Product Image">
+                    </div>
+
+                    <!-- Product Details -->
+                    <div class="col-lg-7">
+                        <div class="mb-3">
+                            <span class="badge rounded-pill px-3 py-2 text-dark bg-light border">@Model.Product.Category.CategoryName</span>
+                            <span class="badge rounded-pill px-3 py-2 text-dark bg-light border">@Model.Product.ApplicationType.Name</span>
                         </div>
+
+                        <p class="text-secondary mt-3">@Html.Raw(Model.Product.ProductDescription)</p>
+
+                        @if (User.IsInRole(Constants.AdminRole))
+                        {
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Square Meters:</label>
+                                @if (Model.ExistsInCart)
+                                {
+                                    <input asp-for="@Model.Product.TempSquareMeters" disabled class="form-control" />
+                                }
+                                else
+                                {
+                                    <input asp-for="@Model.Product.TempSquareMeters" class="form-control" />
+                                }
+                                <span asp-validation-for="@Model.Product.TempSquareMeters" class="text-danger"></span>
+                            </div>
+                        }
                     </div>
                 </div>
-                <div class="card-footer bg-dark">
-                    <div class="row">
-                        <div class="col-12 col-md-6 pb-1">
-                            <a asp-action="Index" class="btn btn-success btn-square form-control btn-lg" style="height:50px;">Back</a>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            @if (Model.ExistsInCart)
-                            {
-                                <a asp-action="RemoveFromCart" asp-route-Id="@Model.Product.Id" class="btn btn-warning btn-square form-control btn-lg" style="height:50px;">Remove from Cart</a>
-                            }
-                            else
-                            {
-                                <button type="submit" asp-route-Id="@Model.Product.Id" class="btn btn-info form-control btn-lg" style="height:50px;">Add to Cart</button>
-                            }
-                        </div>
+            </div>
+
+            <!-- Footer with Actions -->
+            <div class="card-footer bg-gradient-dark text-center">
+                <div class="row">
+                    <div class="col-md-6 pb-2">
+                        <a asp-action="Index" class="btn btn-outline-light w-100 py-2 rounded-pill">Back</a>
+                    </div>
+                    <div class="col-md-6">
+                        @if (Model.ExistsInCart)
+                        {
+                            <a asp-action="RemoveFromCart" asp-route-Id="@Model.Product.Id"
+                               class="btn btn-warning w-100 py-2 rounded-pill">Remove from Cart</a>
+                        }
+                        else
+                        {
+                            <button type="submit" asp-route-Id="@Model.Product.Id"
+                                    class="btn btn-info w-100 py-2 rounded-pill">
+                                Add to Cart
+                            </button>
+                        }
                     </div>
                 </div>
             </div>
         </div>
     </form>
 </div>
+
+<!-- Custom Styles -->
+<style>
+    .bg-gradient-dark {
+        background: linear-gradient(135deg, #222, #444);
+    }
+
+    .btn:hover {
+        opacity: 0.9;
+        transition: 0.3s ease-in-out;
+    }
+</style>
