@@ -8,7 +8,7 @@ namespace BuyTilez.Data.Data
         public ApplicationDbContext CreateDbContext(string[] args)
         {
             var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
-            optionsBuilder.UseSqlServer("Server=ROGBeastX;Database=BuyTilez;Trusted_Connection=True;MultipleActiveResultSets=True;TrustServerCertificate=true;");
+            optionsBuilder.UseSqlServer("Server=tcp:buytilez-sqlserver.database.windows.net,1433;Initial Catalog=buytilez-db;Persist Security Info=False;User ID=sql-user;Password=Test@123;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
 
             return new ApplicationDbContext(optionsBuilder.Options);
         }
