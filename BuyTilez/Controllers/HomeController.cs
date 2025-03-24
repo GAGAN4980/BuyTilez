@@ -2,8 +2,11 @@ using BuyTilez.Data.Data.Repository.IRepository;
 using BuyTilez.Models;
 using BuyTilez.Models.ViewModels;
 using BuyTilez.Utilities;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using System.Security.Claims;
 
 namespace BuyTilez.Controllers
 {
@@ -12,12 +15,16 @@ namespace BuyTilez.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly IProductRepository _productRepo;
         private readonly ICategoryRepository _categoryRepo;
+        private readonly ICartRepository _cartRepo;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public HomeController(ILogger<HomeController> logger, IProductRepository productRepository, ICategoryRepository categoryRepo)
+        public HomeController(ILogger<HomeController> logger, IProductRepository productRepository, ICategoryRepository categoryRepo, ICartRepository cartRepository, UserManager<ApplicationUser> userManager)
         {
             _logger = logger;
             _productRepo = productRepository;
             _categoryRepo = categoryRepo;
+            _cartRepo = cartRepository;
+            _userManager = userManager;
         }
 
         public IActionResult Index()
@@ -33,20 +40,21 @@ namespace BuyTilez.Controllers
 
         public IActionResult Detail(int Id)
         {
-            List<ShoppingCart> shoppingCartList = new List<ShoppingCart>();
-            if (HttpContext.Session.Get<IEnumerable<ShoppingCart>>(Constants.ShoppingCartSession) != null
-                && HttpContext.Session.Get<IEnumerable<ShoppingCart>>(Constants.ShoppingCartSession).Count() > 0)
+            List<ShoppingCart> cartList = new List<ShoppingCart>();
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            if (claimsIdentity.IsAuthenticated)
             {
-                shoppingCartList = HttpContext.Session.Get<List<ShoppingCart>>(Constants.ShoppingCartSession);
+                var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+                var userId = claim.Value;
+                cartList = _cartRepo.GetUserCart(userId).ToList();
             }
-
             DetailViewModel detailViewModel = new DetailViewModel()
             {
                 Product = _productRepo.GetFirstOrDefault(p => p.Id == Id, includeProperties: "Category,ApplicationType"),
                 ExistsInCart = false
             };
 
-            foreach (var item in shoppingCartList)
+            foreach (var item in cartList)
             {
                 if (item.ProductId == Id)
                 {
@@ -57,39 +65,32 @@ namespace BuyTilez.Controllers
             return View(detailViewModel);
         }
 
+        [Authorize]
         [HttpPost, ActionName("Detail")]
         public IActionResult DetailPost(int Id, DetailViewModel detailViewModel)
         {
-            List<ShoppingCart> shoppingCartList = new List<ShoppingCart>();
-            if (HttpContext.Session.Get<IEnumerable<ShoppingCart>>(Constants.ShoppingCartSession) != null
-                && HttpContext.Session.Get<IEnumerable<ShoppingCart>>(Constants.ShoppingCartSession).Count() > 0)
-            {
-                shoppingCartList = HttpContext.Session.Get<List<ShoppingCart>>(Constants.ShoppingCartSession);
-            }
-
-            shoppingCartList.Add(new ShoppingCart { ProductId = Id, SquareMeters = detailViewModel.Product.TempSquareMeters });
-            HttpContext.Session.Set(Constants.ShoppingCartSession, shoppingCartList);
-
+            List<ShoppingCart> cartList = new List<ShoppingCart>();
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+            var userId = claim.Value != null? claim.Value:"-1";
+            _cartRepo.Add(new ShoppingCart { ProductId = Id, SquareMeters = detailViewModel.Product.TempSquareMeters, UserId = userId });
+            _cartRepo.Save();
             return RedirectToAction(nameof(Index));
         }
 
         public IActionResult RemoveFromCart(int Id)
         {
-            List<ShoppingCart> shoppingCartList = new List<ShoppingCart>();
-            if (HttpContext.Session.Get<IEnumerable<ShoppingCart>>(Constants.ShoppingCartSession) != null
-                && HttpContext.Session.Get<IEnumerable<ShoppingCart>>(Constants.ShoppingCartSession).Count() > 0)
-            {
-                shoppingCartList = HttpContext.Session.Get<List<ShoppingCart>>(Constants.ShoppingCartSession);
-            }
-
-            var productToRemove = shoppingCartList.SingleOrDefault(x => x.ProductId == Id);
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+            var userId = claim.Value;
+            List<ShoppingCart> cartList = _cartRepo.GetUserCart(userId).ToList();
+            var productToRemove = cartList.SingleOrDefault(x => x.ProductId == Id);
             if (productToRemove != null)
             {
-                shoppingCartList.Remove(productToRemove);
+                cartList.Remove(productToRemove);
             }
-
-            HttpContext.Session.Set(Constants.ShoppingCartSession, shoppingCartList);
-
+            _cartRepo.Update(cartList.SingleOrDefault());
+            _cartRepo.Save();
             return RedirectToAction(nameof(Index));
         }
 

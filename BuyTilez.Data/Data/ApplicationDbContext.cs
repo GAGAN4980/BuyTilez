@@ -25,5 +25,7 @@ namespace BuyTilez.Data.Data
         public DbSet<Sale> Sales { get; set; }
 
         public DbSet<SaleDetails> SaleDetails { get; set; }
+
+        public DbSet<ShoppingCart> Carts { get; set; }
     }
 }

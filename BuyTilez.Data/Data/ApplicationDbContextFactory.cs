@@ -8,7 +8,7 @@ namespace BuyTilez.Data.Data
         public ApplicationDbContext CreateDbContext(string[] args)
         {
             var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
-            optionsBuilder.UseSqlServer("Server=tcp:buytilez-sqlserver.database.windows.net,1433;Initial Catalog=buytilez-db;Persist Security Info=False;User ID=sql-user;Password=Test@123;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
+            optionsBuilder.UseSqlServer("Server=buytilez-sqlserver.database.windows.net;Initial Catalog=buytilez-db;User ID=sql-user;Password=Test@123;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=True;");
 
             return new ApplicationDbContext(optionsBuilder.Options);
         }

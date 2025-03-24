@@ -40,6 +40,7 @@ builder.Services.Configure<BrainTreeSettings>(builder.Configuration.GetSection("
 builder.Services.AddSingleton<IBrainTreeGate, BrainTreeGate>();
 
 // Register repositories with updated English-friendly names
+builder.Services.AddScoped<ICartRepository, CartRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IApplicationTypeRepository, ApplicationTypeRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();

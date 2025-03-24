@@ -16,6 +16,7 @@ namespace BuyTilez.Controllers
     {
         private readonly IProductRepository _productRepo;
         private readonly IApplicationUserRepository _userRepo;
+        private readonly ICartRepository _cartRepo;
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly IEmailSender _emailSender;
         private readonly IOrderRepository _orderRepo;
@@ -29,7 +30,7 @@ namespace BuyTilez.Controllers
 
         public CartController(IWebHostEnvironment webHostEnvironment, IEmailSender emailSender, IProductRepository productRepo, IApplicationUserRepository userRepo,
                               IOrderRepository orderRepo, IOrderDetailsRepository orderDetailRepo, ISaleRepository saleRepo, ISaleDetailsRepository saleDetailRepo,
-                              IBrainTreeGate brain)
+                              IBrainTreeGate brain, ICartRepository cartRepo)
         {
             _productRepo = productRepo;
             _userRepo = userRepo;
@@ -40,24 +41,24 @@ namespace BuyTilez.Controllers
             _saleRepo = saleRepo;
             _saleDetailRepo = saleDetailRepo;
             _brain = brain;
+            _cartRepo = cartRepo;
         }
 
         public IActionResult Index()
         {
-            List<ShoppingCart> cartList = new List<ShoppingCart>();
-            if (HttpContext.Session.Get<IEnumerable<ShoppingCart>>(Constants.ShoppingCartSession) != null &&
-                HttpContext.Session.Get<IEnumerable<ShoppingCart>>(Constants.ShoppingCartSession).Count() > 0)
-            {
-                cartList = HttpContext.Session.Get<List<ShoppingCart>>(Constants.ShoppingCartSession);
-            }
-            List<int> productIdsInCart = cartList.Select(i => i.ProductId).ToList();
-            IEnumerable<Product> productList = _productRepo.GetAll(p => productIdsInCart.Contains(p.Id));
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+            var userId = claim.Value;
 
-            List<Product> finalProductList = new List<Product>();
+            List<ShoppingCart> cartList = _cartRepo.GetUserCart(userId).ToList();
+            var productIdsInCart = cartList.Select(i => i.ProductId).ToList();
+            var productList = _productRepo.GetAll(p => productIdsInCart.Contains(p.Id));
+
+            var finalProductList = new List<Product>();
 
             foreach (var cartItem in cartList)
             {
-                Product tempProduct = productList.FirstOrDefault(p => p.Id == cartItem.ProductId);
+                var tempProduct = productList.FirstOrDefault(p => p.Id == cartItem.ProductId);
                 tempProduct.TempSquareMeters = cartItem.SquareMeters;
                 finalProductList.Add(tempProduct);
             }
@@ -70,24 +71,36 @@ namespace BuyTilez.Controllers
         [ActionName("Index")]
         public IActionResult IndexPost(IEnumerable<Product> productList)
         {
-            List<ShoppingCart> cartList = new List<ShoppingCart>();
-            foreach (Product product in productList)
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+            var userId = claim.Value;
+
+            var cartList = new List<ShoppingCart>();
+            foreach (var product in productList)
             {
-                cartList.Add(new ShoppingCart { ProductId = product.Id, SquareMeters = product.TempSquareMeters });
+                cartList.Add(new ShoppingCart { ProductId = product.Id, SquareMeters = product.TempSquareMeters, UserId = userId });
             }
-            HttpContext.Session.Set(Constants.ShoppingCartSession, cartList);
+
+            _cartRepo.ClearUserCart(userId);
+            _cartRepo.AddRange(cartList);
+            _cartRepo.Save();
+
             return RedirectToAction(nameof(Summary));
         }
 
         public IActionResult Summary()
         {
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+            var userId = claim.Value;
+
             ApplicationUser applicationUser;
 
             if (User.IsInRole(Constants.AdminRole))
             {
                 if (HttpContext.Session.Get<int>(Constants.OrderSessionId) != 0)
                 {
-                    Order order = _orderRepo.GetFirstOrDefault(u => u.Id == HttpContext.Session.Get<int>(Constants.OrderSessionId));
+                    var order = _orderRepo.GetFirstOrDefault(u => u.Id == HttpContext.Session.Get<int>(Constants.OrderSessionId));
                     applicationUser = new ApplicationUser()
                     {
                         FullName = order.FullName,
@@ -105,19 +118,12 @@ namespace BuyTilez.Controllers
             }
             else
             {
-                var claimsIdentity = (ClaimsIdentity)User.Identity;
-                var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
-                applicationUser = _userRepo.GetFirstOrDefault(u => u.Id == claim.Value);
+                applicationUser = _userRepo.GetFirstOrDefault(u => u.Id == userId);
             }
 
-            List<ShoppingCart> cartList = new List<ShoppingCart>();
-            if (HttpContext.Session.Get<IEnumerable<ShoppingCart>>(Constants.ShoppingCartSession) != null &&
-                HttpContext.Session.Get<IEnumerable<ShoppingCart>>(Constants.ShoppingCartSession).Count() > 0)
-            {
-                cartList = HttpContext.Session.Get<List<ShoppingCart>>(Constants.ShoppingCartSession);
-            }
-            List<int> productIdsInCart = cartList.Select(i => i.ProductId).ToList();
-            IEnumerable<Product> productList = _productRepo.GetAll(p => productIdsInCart.Contains(p.Id));
+            var cartList = _cartRepo.GetUserCart(userId).ToList();
+            var productIdsInCart = cartList.Select(i => i.ProductId).ToList();
+            var productList = _productRepo.GetAll(p => productIdsInCart.Contains(p.Id));
 
             productUserViewModel = new ProductUserViewModel()
             {
@@ -126,7 +132,7 @@ namespace BuyTilez.Controllers
 
             foreach (var cartItem in cartList)
             {
-                Product tempProduct = _productRepo.GetFirstOrDefault(p => p.Id == cartItem.ProductId);
+                var tempProduct = _productRepo.GetFirstOrDefault(p => p.Id == cartItem.ProductId);
                 tempProduct.TempSquareMeters = cartItem.SquareMeters;
                 productUserViewModel.ProductList.Add(tempProduct);
             }
@@ -141,12 +147,13 @@ namespace BuyTilez.Controllers
         {
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+            var userId = claim.Value;
 
             if (User.IsInRole(Constants.AdminRole))
             {
-                Sale sale = new Sale()
+                var sale = new Sale()
                 {
-                    CreatedByUserId = claim.Value,
+                    CreatedByUserId = userId,
                     TotalSaleAmount = productUserViewModel.ProductList.Sum(x => x.TempSquareMeters * x.Price),
                     Address = productUserViewModel.ApplicationUser.Address,
                     City = productUserViewModel.ApplicationUser.City,
@@ -162,7 +169,7 @@ namespace BuyTilez.Controllers
 
                 foreach (var product in productUserViewModel.ProductList)
                 {
-                    SaleDetails saleDetail = new SaleDetails()
+                    var saleDetail = new SaleDetails()
                     {
                         SaleId = sale.Id,
                         PricePerSquareMeter = product.Price,
@@ -173,7 +180,7 @@ namespace BuyTilez.Controllers
                 }
                 _saleDetailRepo.Save();
 
-                string nonceFromClient = collection["payment_method_nonce"];
+                var nonceFromClient = collection["payment_method_nonce"];
 
                 var request = new TransactionRequest
                 {
@@ -187,7 +194,7 @@ namespace BuyTilez.Controllers
                 };
 
                 var gateway = _brain.GetGateway();
-                Result<Transaction> result = gateway.Transaction.Sale(request);
+                var result = gateway.Transaction.Sale(request);
 
                 if (result.Target.ProcessorResponseText == "Approved")
                 {
@@ -208,16 +215,29 @@ namespace BuyTilez.Controllers
 
         public IActionResult Confirmation(int id = 0)
         {
-            Sale sale = _saleRepo.GetFirstOrDefault(v => v.Id == id);
+            var sale = _saleRepo.GetFirstOrDefault(v => v.Id == id);
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+            var userId = claim.Value;
+
+            _cartRepo.ClearUserCart(userId);
             HttpContext.Session.Clear();
             return View(sale);
         }
 
         public IActionResult Remove(int Id)
         {
-            List<ShoppingCart> cartList = HttpContext.Session.Get<List<ShoppingCart>>(Constants.ShoppingCartSession);
-            cartList.Remove(cartList.FirstOrDefault(p => p.ProductId == Id));
-            HttpContext.Session.Set(Constants.ShoppingCartSession, cartList);
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+            var userId = claim.Value;
+            
+            var cartList = _cartRepo.GetUserCart(userId).ToList();
+            var cartItem = cartList.FirstOrDefault(p => p.ProductId == Id);
+            if (cartItem != null)
+            {
+                _cartRepo.Remove(cartItem);
+                _cartRepo.Save();
+            }
 
             return RedirectToAction(nameof(Index));
         }
@@ -226,15 +246,29 @@ namespace BuyTilez.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult UpdateCart(IEnumerable<Product> productList)
         {
-            List<ShoppingCart> cartList = productList.Select(prod => new ShoppingCart { ProductId = prod.Id, SquareMeters = prod.TempSquareMeters }).ToList();
-            HttpContext.Session.Set(Constants.ShoppingCartSession, cartList);
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+            var userId = claim.Value;
+
+            var cartList = productList.Select(prod => new ShoppingCart { ProductId = prod.Id, SquareMeters = prod.TempSquareMeters, UserId = userId }).ToList();
+
+            _cartRepo.ClearUserCart(userId);
+            _cartRepo.AddRange(cartList);
+            _cartRepo.Save();
+
             return RedirectToAction(nameof(Index));
         }
 
         public IActionResult Clear()
         {
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+            var userId = claim.Value;
+
+            _cartRepo.ClearUserCart(userId);
             HttpContext.Session.Clear();
             return RedirectToAction("Index", "Home");
         }
     }
+
 }

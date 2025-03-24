@@ -1,240 +1,279 @@
-/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
-for details on configuring this project to bundle and minify static web assets. */
-
-a.navbar-brand {
-    white-space: normal;
-    text-align: center;
-    word-break: break-all;
-}
-
-/* Provide sufficient contrast against white background */
-a {
-    color: #0366d6;
-}
-
-.btn-primary {
-    color: #fff;
-    background-color: #1b6ec2;
-    border-color: #1861ac;
-}
-
-.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
-    color: #fff;
-    background-color: #1b6ec2;
-    border-color: #1861ac;
-}
-
-/* Sticky footer styles
--------------------------------------------------- */
-html {
-    font-size: 14px;
-}
-
-@media (min-width: 768px) {
-    html {
-        font-size: 16px;
-    }
-}
-
-.border-top {
-    border-top: 1px solid #e5e5e5;
-}
-
-.border-bottom {
-    border-bottom: 1px solid #e5e5e5;
-}
-
-.box-shadow {
-    box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
-}
-
-button.accept-policy {
-    font-size: 1rem;
-    line-height: inherit;
-}
-
-/* Sticky footer styles
--------------------------------------------------- */
-html {
-    position: relative;
-    min-height: 100%;
-}
-
+/* Global Typography & Base Styling */
 body {
-    /* Margin bottom by footer height */
-    margin-bottom: 60px;
-    /*background: url('/images/dust_scratches.png');*/
+    font-family: 'Segoe UI', Roboto, sans-serif;
+    font-size: 16px;
+    background-color: #f4f6f8;
+    color: #333;
+    margin: 0;
 }
 
-.footer {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    white-space: nowrap;
-    line-height: 60px; /* Vertically center the text there */
+/* Flex Layout for Sticky Footer */
+html, body {
+    height: 100%;
 }
 
-
-
-
-
-
-.port-image {
-    width: 100%;
+.page-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
-.col-md-3 {
-    margin-bottom: 20px;
+.content {
+    flex: 1;
 }
 
-.each-item {
-    position: relative;
-    overflow: hidden;
+/* Navbar */
+.navbar {
+    padding: 1rem 2rem;
+    background-color: #2c3e50 !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-    .each-item:hover .cap2, .each-item:hover .cap1 {
-        left: 0px;
+.navbar-brand {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #ffffff !important;
+    letter-spacing: 0.5px;
+}
+
+.nav-link {
+    color: #ccc !important;
+    margin-left: 1rem;
+    transition: color 0.3s ease;
+}
+
+    .nav-link:hover {
+        color: #ffffff !important;
     }
 
-.cap1 {
-    position: absolute;
-    width: 100%;
-    height: 70%;
-    background: rgba(255, 255, 255, 0.5);
-    top: 0px;
-    left: -100%;
-    padding: 10px;
-    transition: all .5s;
-}
+    .nav-link i {
+        color: #f39c12;
+        margin-right: 5px;
+    }
 
-.cap2 {
-    position: absolute;
-    width: 100%;
-    height: 30%;
-    background: rgba(0, 178, 255, 0.5);
-    bottom: 0px;
-    left: 100%;
-    padding: 10px;
-    transition: all .5s;
-}
-
-
-
-
-.boxContainer {
-    display: table;
-}
-
-.box {
-    width: 200px;
-    height: 200px;
-    background: #0088cc;
-    padding: 2%;
-    display: table-cell;
+/* Footer */
+.footer-div {
+    height: 60px;
+    background-color: #2c3e50;
+    color: white;
+    line-height: 60px;
     text-align: center;
-    vertical-align: bottom;
+    font-size: 0.9rem;
 }
 
-#header {
-    position: relative;
-    min-height: 150px;
+/* Register Card */
+.register-card {
+    background: white;
+    border-radius: 10px;
+    padding: 2rem 3rem;
+    margin-top: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
-#header-content {
-    position: absolute;
-    bottom: 0;
-    left: 0;
+    .register-card h2 {
+        font-weight: 700;
+        color: #2c7a6f;
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+
+/* Inputs */
+.form-control {
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-size: 15px;
+    border: 1px solid #ced4da;
+    margin-bottom: 1rem;
+    transition: border-color 0.2s ease;
+}
+
+    .form-control:focus {
+        border-color: #1b6ec2;
+        box-shadow: 0 0 0 0.2rem rgba(27, 110, 194, 0.1);
+    }
+
+/* Register Button */
+.btn-register {
+    background-color: #007bff;
+    color: white;
+    padding: 12px;
     width: 100%;
+    font-weight: 600;
+    border-radius: 6px;
+    border: none;
+    transition: background-color 0.3s ease;
 }
 
+    .btn-register:hover {
+        background-color: #0056b3;
+    }
 
-
-#logreg-forms {
-    width: 412px;
-    margin: 10vh auto;
-    background-color: white;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+/* Product Cards */
+.tile-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: box-shadow 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
 
-    #logreg-forms form {
+    .tile-card:hover {
+        box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+        transform: translateY(-4px);
+    }
+
+.tile-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.tile-body {
+    padding: 1rem;
+}
+
+.tile-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.tile-price {
+    font-size: 1rem;
+    color: #1b6ec2;
+    margin-bottom: 0.5rem;
+}
+
+.tile-btn {
+    background-color: #1b6ec2;
+    color: #fff;
+    padding: 10px 14px;
+    border: none;
+    border-radius: 6px;
+    transition: background-color 0.3s ease;
+}
+
+    .tile-btn:hover {
+        background-color: #155fa0;
+    }
+
+/* Utility */
+.mt-3 {
+    margin-top: 1rem;
+}
+
+.mb-3 {
+    margin-bottom: 1rem;
+}
+
+/* Login Card Container */
+.login-card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 2rem 2.5rem;
+    margin-top: 3rem;
+    box-shadow: 0 6px 30px rgba(0, 0, 0, 0.06);
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+    .login-card h2 {
+        font-weight: 700;
+        color: #2c7a6f;
+        margin-bottom: 2rem;
+    }
+
+    /* Input Fields */
+    .login-card .form-control {
         width: 100%;
-        max-width: 410px;
-        padding: 15px;
-        margin: auto;
+        border-radius: 6px;
+        padding: 12px 14px;
+        font-size: 15px;
+        border: 1px solid #ced4da;
+        margin-bottom: 1rem;
+        transition: border-color 0.2s ease;
     }
 
-    #logreg-forms .form-control {
-        position: relative;
-        box-sizing: border-box;
-        height: auto;
-        padding: 10px;
-        font-size: 16px;
-    }
-
-        #logreg-forms .form-control:focus {
-            z-index: 2;
+        .login-card .form-control:focus {
+            border-color: #1b6ec2;
+            box-shadow: 0 0 0 0.2rem rgba(27, 110, 194, 0.1);
         }
 
-    #logreg-forms .form-signin input[type="email"] {
-        margin-bottom: -1px;
-        border-bottom-right-radius: 0;
-        border-bottom-left-radius: 0;
-    }
-
-    #logreg-forms .form-signin input[type="password"] {
-        border-top-left-radius: 0;
-        border-top-right-radius: 0;
-    }
-
-    #logreg-forms .social-login {
-        width: 390px;
-        margin: 0 auto;
-        margin-bottom: 14px;
-    }
-
-    #logreg-forms .social-btn {
-        font-weight: 100;
-        color: white;
-        width: 190px;
-        font-size: 0.9rem;
-    }
-
-    #logreg-forms a {
-        display: block;
-        padding-top: 10px;
-        color: lightseagreen;
-    }
-
-#logreg-form .lines {
-    width: 200px;
-    border: 1px solid red;
-}
-
-
-#logreg-forms button[type="submit"] {
-    margin-top: 10px;
-}
-
-.facebook-btn {
-    background-color: #3C589C;
+/* Login Button */
+.btn-login {
+    background-color: #1b6ec2;
     color: white;
+    padding: 12px;
+    font-weight: 600;
+    width: 100%;
+    border-radius: 6px;
+    border: none;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+    margin-bottom: 1rem;
 }
 
+    .btn-login:hover {
+        background-color: #155fa0;
+    }
 
-#logreg-forms .form-reset, #logreg-forms .form-signup {
-    display: none;
+/* Links */
+.auth-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    margin-top: 0.5rem;
 }
 
-    #logreg-forms .form-signup .social-btn {
-        width: 210px;
+    .auth-links a {
+        font-size: 0.95rem;
+        color: #1b6ec2;
+        text-decoration: none;
+        transition: color 0.2s ease-in-out;
     }
 
-    #logreg-forms .form-signup input {
-        margin-bottom: 2px;
-    }
+        .auth-links a:hover {
+            color: #0a58ca;
+        }
 
-.form-signup .social-login {
-    width: 210px !important;
+.btn-register-link {
+    background-color: #00cfff;
+    color: white !important;
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-weight: 500;
+    width: fit-content;
     margin: 0 auto;
+}
+
+
+.bg-gradient-dark {
+    background: linear-gradient(135deg, #2c3e50, #1f2d3a);
+}
+
+.product-detail-card {
+    transition: box-shadow 0.3s ease;
+}
+
+    .product-detail-card:hover {
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    }
+
+.btn {
+    transition: all 0.2s ease-in-out;
+}
+
+    .btn:hover {
+        transform: scale(1.01);
+        opacity: 0.95;
+    }
+
+.badge {
+    font-size: 0.85rem;
+    font-weight: 500;
 }
