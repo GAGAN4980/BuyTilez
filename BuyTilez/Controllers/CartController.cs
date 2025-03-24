@@ -112,9 +112,9 @@ namespace BuyTilez.Controllers
                 {
                     applicationUser = new ApplicationUser();
                 }
-                var gateway = _brain.GetGateway();
-                var clientToken = gateway.ClientToken.Generate();
-                ViewBag.ClientToken = clientToken;
+            //    var gateway = _brain.GetGateway();
+            //    var clientToken = gateway.ClientToken.Generate();
+            //    ViewBag.ClientToken = clientToken;
             }
             else
             {
@@ -193,12 +193,12 @@ namespace BuyTilez.Controllers
                     }
                 };
 
-                var gateway = _brain.GetGateway();
-                var result = gateway.Transaction.Sale(request);
+                //var gateway = _brain.GetGateway();
+                //var result = gateway.Transaction.Sale(request);
 
-                if (result.Target.ProcessorResponseText == "Approved")
+                if (/*result.Target.ProcessorResponseText*/ "" != "Approved")
                 {
-                    sale.TransactionId = result.Target.Id;
+                    sale.TransactionId = "123";// result.Target.Id;
                     sale.SaleStatus = Constants.StatusApproved;
                 }
                 else
@@ -233,10 +233,12 @@ namespace BuyTilez.Controllers
             
             var cartList = _cartRepo.GetUserCart(userId).ToList();
             var cartItem = cartList.FirstOrDefault(p => p.ProductId == Id);
+
             if (cartItem != null)
             {
                 _cartRepo.Remove(cartItem);
                 _cartRepo.Save();
+                HttpContext.Session.Set(Constants.ShoppingCartSession, cartList.Where(p => p.ProductId != Id));
             }
 
             return RedirectToAction(nameof(Index));
@@ -249,12 +251,12 @@ namespace BuyTilez.Controllers
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
             var userId = claim.Value;
-
             var cartList = productList.Select(prod => new ShoppingCart { ProductId = prod.Id, SquareMeters = prod.TempSquareMeters, UserId = userId }).ToList();
-
+            
             _cartRepo.ClearUserCart(userId);
             _cartRepo.AddRange(cartList);
             _cartRepo.Save();
+            HttpContext.Session.Set(Constants.ShoppingCartSession, cartList);
 
             return RedirectToAction(nameof(Index));
         }

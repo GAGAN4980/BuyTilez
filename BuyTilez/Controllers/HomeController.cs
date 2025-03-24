@@ -29,6 +29,16 @@ namespace BuyTilez.Controllers
 
         public IActionResult Index()
         {
+            List<ShoppingCart> cartList = new List<ShoppingCart>();
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            if (claimsIdentity.IsAuthenticated)
+            {
+                var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+                var userId = claim.Value;
+                HttpContext.Session.Set(Constants.ShoppingCartSession, _cartRepo.GetUserCart(userId).ToList());
+            }
+            else
+                HttpContext.Session.Set(Constants.ShoppingCartSession, new List<ShoppingCart>());
             HomeViewModel homeViewModel = new HomeViewModel()
             {
                 Products = _productRepo.GetAll(includeProperties: "Category,ApplicationType"),
